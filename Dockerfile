@@ -51,7 +51,7 @@ RUN cd /openca-ocsp-master && \
 WORKDIR /usr/local/ocspd
 
 ADD ./run_ocspd.sh /usr/local/ocspd/run_ocspd.sh
-
+RUN chmod +x /usr/local/ocspd/run_ocspd.sh
 ADD ./ca.xml /usr/local/ocspd/etc/ocspd/ca.d/ca.xml
 ADD ./ocspd.xml /usr/local/ocspd/etc/ocspd/ocspd.xml
 ADD ./token.xml /usr/local/ocspd/etc/ocspd/pki/token.d/token.xml
