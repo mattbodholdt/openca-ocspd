@@ -8,7 +8,7 @@ RUN apt-get update && \
 		nano \
 		libldap-dev \
 		libxml2-dev \
-		libssl-dev \
+		libssl-dev && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
