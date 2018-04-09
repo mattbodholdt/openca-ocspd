@@ -9,7 +9,6 @@ RUN apt-get update && \
 		libldap-dev \
 		libxml2-dev \
 		libssl-dev \
-		openssl && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
