@@ -8,7 +8,8 @@ RUN apt-get update && \
 		nano \
 		libldap-dev \
 		libxml2-dev \
-		libssl-dev && \
+		libssl-dev \
+		openssl && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -23,10 +24,7 @@ ADD https://github.com/openca/openca-ocspd/archive/master.tar.gz /openca-ocsp-ma
 
 ADD https://github.com/openca/libpki/archive/master.tar.gz /libpki-master/
 
-ADD https://launchpad.net/~ubuntu-security-proposed/+archive/ubuntu/ppa/+build/13829273/+files/openssl_1.0.2g-1ubuntu4.10_amd64.deb /libpki-master/
-
 RUN  cd /libpki-master && \
-	dpkg -i openssl_1.0.2g-1ubuntu4.10_amd64.deb && \
 	tar -xzf master.tar.gz && \
 	cd libpki-master && \
 	./configure && \
