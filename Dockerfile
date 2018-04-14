@@ -1,57 +1,53 @@
 FROM ubuntu
 
-RUN apt-get update && \
-	apt-get install -y \
+RUN apt update && \
+	apt install -y \
+		git \
 		gcc \
 		make \
-		wget \
-		nano \
+		libicu-dev \
 		libldap-dev \
 		libxml2-dev \
-		libssl-dev \
-		openssl && \
-	apt-get clean && \
-	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+		libssl-dev && \
+	        apt clean && \
+        rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN mkdir -p /usr/local/src && \
-	mkdir -p /data/ocspd && \
-	mkdir /openca-ocsp-master && \
-	mkdir /libpki-master
-
-RUN useradd ocspd
-
-ADD https://github.com/openca/openca-ocspd/archive/master.tar.gz /openca-ocsp-master/
-
-ADD https://github.com/openca/libpki/archive/master.tar.gz /libpki-master/
-
-RUN  cd /libpki-master && \
-	tar -xzf master.tar.gz && \
-	cd libpki-master && \
+RUN git clone https://github.com/openca/libpki/ libpki-master && \
+	cd /libpki-master && \
+	git checkout 320e80589648f5a554304995b666de3274576176 && \
 	./configure && \
 	make && \
 	make install && \
 	ln -s /usr/lib64/libpki.so.88 /usr/lib/libpki.so.88 && \
 	ln -s /usr/lib64/libpki.so.90 /usr/lib/libpki.so.90 && \
 	cd / && \
-	rm -rf /libpki-master
+	rm -rf /libpki-master && \
+	useradd ocspd
 
-RUN cd /openca-ocsp-master && \
-	tar -xzf master.tar.gz && \
-	cd openca-ocspd-master && \
+ADD ./run_ocspd.sh /usr/local/ocspd/run_ocspd.sh
+
+RUN git clone https://github.com/openca/openca-ocspd /openca-ocsp-master/ && \ 
+	cd /openca-ocsp-master && \
 	./configure --prefix=/usr/local/ocspd && \
         make && \
         make install && \
         cd / && \
-        rm -rf openca-ocsp-master && \
         rm -rf /usr/local/ocspd/etc/ocspd/pki/token.d/* && \
         rm -rf /usr/local/ocspd/etc/ocspd/ca.d/* && \
         rm /usr/local/ocspd/etc/ocspd/ocspd.xml && \
-	rm -rf /openca-ocsp-master
+	rm -rf /openca-ocsp-master && \
+	apt-get remove -y \
+		make \
+		gcc \
+		git  && \
+	apt autoremove -y && \
+	apt clean && \
+	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+	mkdir -p /data/ocspd && \
+	chmod +x /usr/local/ocspd/run_ocspd.sh
 
 WORKDIR /usr/local/ocspd
 
-ADD ./run_ocspd.sh /usr/local/ocspd/run_ocspd.sh
-RUN chmod +x /usr/local/ocspd/run_ocspd.sh
 ADD ./ca.xml /usr/local/ocspd/etc/ocspd/ca.d/ca.xml
 ADD ./ocspd.xml /usr/local/ocspd/etc/ocspd/ocspd.xml
 ADD ./token.xml /usr/local/ocspd/etc/ocspd/pki/token.d/token.xml
