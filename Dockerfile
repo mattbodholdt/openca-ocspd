@@ -9,12 +9,11 @@ RUN apt update && \
 		libldap-dev \
 		libxml2-dev \
 		libssl-dev && \
-	        apt clean && \
+	apt clean && \
         rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN git clone https://github.com/openca/libpki/ libpki-master && \
 	cd /libpki-master && \
-	git checkout 320e80589648f5a554304995b666de3274576176 && \
 	./configure && \
 	make && \
 	make install && \
