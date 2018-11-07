@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:xenial
 
 RUN apt update && \
 	apt install -y \
@@ -17,8 +17,6 @@ RUN git clone https://github.com/openca/libpki/ libpki-master && \
 	./configure && \
 	make && \
 	make install && \
-	ln -s /usr/lib64/libpki.so.88 /usr/lib/libpki.so.88 && \
-	ln -s /usr/lib64/libpki.so.90 /usr/lib/libpki.so.90 && \
 	cd / && \
 	rm -rf /libpki-master && \
 	useradd ocspd
