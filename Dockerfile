@@ -12,7 +12,7 @@ RUN apt update && \
 	apt clean && \
         rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN git clone https://github.com/openca/libpki.git libpki-master && \
+RUN git clone https://github.com/openca/libpki.git -branch libpki-0.9.0 libpki-master && \
 	cd /libpki-master && \
 	./configure && \
 	make && \
