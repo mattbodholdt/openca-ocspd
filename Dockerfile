@@ -12,7 +12,7 @@ RUN apt update && \
 	apt clean && \
         rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN git clone https://github.com/openca/libpki/ libpki-master && \
+RUN git clone https://github.com/openca/libpki.git libpki-master && \
 	cd /libpki-master && \
 	./configure && \
 	make && \
@@ -23,7 +23,7 @@ RUN git clone https://github.com/openca/libpki/ libpki-master && \
 
 ADD ./run_ocspd.sh /usr/local/ocspd/run_ocspd.sh
 
-RUN git clone https://github.com/openca/openca-ocspd /openca-ocsp-master/ && \ 
+RUN git clone https://github.com/mattbodholdt/openca-ocspd-1.git openca-ocsp-master && \ 
 	cd /openca-ocsp-master && \
 	./configure --prefix=/usr/local/ocspd && \
         make && \
