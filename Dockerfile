@@ -9,8 +9,6 @@ RUN apt update && \
 		libldap-dev \
 		libxml2-dev \
 		libssl-dev && \
-	apt clean && \
-        rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN git clone https://github.com/openca/libpki.git --branch libpki-0.9.0 libpki-master && \
 	cd /libpki-master && \
@@ -23,7 +21,7 @@ RUN git clone https://github.com/openca/libpki.git --branch libpki-0.9.0 libpki-
 
 ADD ./run_ocspd.sh /usr/local/ocspd/run_ocspd.sh
 
-RUN git clone https://github.com/openca/openca-ocspd.git openca-ocsp-master && \ 
+RUN git clone https://github.com/openca/openca-ocspd.git --branch openca-ocspd-3.1.2 openca-ocsp-master && \ 
 	cd /openca-ocsp-master && \
 	./configure --prefix=/usr/local/ocspd && \
         make && \
