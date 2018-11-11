@@ -8,7 +8,7 @@ RUN apt update && \
 		libicu-dev \
 		libldap-dev \
 		libxml2-dev \
-		libssl-dev && \
+		libssl-dev
 
 RUN git clone https://github.com/openca/libpki.git --branch libpki-0.9.0 libpki-master && \
 	cd /libpki-master && \
@@ -24,12 +24,12 @@ ADD ./run_ocspd.sh /usr/local/ocspd/run_ocspd.sh
 RUN git clone https://github.com/openca/openca-ocspd.git --branch openca-ocspd-3.1.2 openca-ocsp-master && \ 
 	cd /openca-ocsp-master && \
 	./configure --prefix=/usr/local/ocspd && \
-        make && \
-        make install && \
-        cd / && \
-        rm -rf /usr/local/ocspd/etc/ocspd/pki/token.d/* && \
-        rm -rf /usr/local/ocspd/etc/ocspd/ca.d/* && \
-        rm /usr/local/ocspd/etc/ocspd/ocspd.xml && \
+	make && \
+	make install && \
+	cd / && \
+	rm -rf /usr/local/ocspd/etc/ocspd/pki/token.d/* && \
+	rm -rf /usr/local/ocspd/etc/ocspd/ca.d/* && \
+	rm /usr/local/ocspd/etc/ocspd/ocspd.xml && \
 	rm -rf /openca-ocsp-master && \
 	apt-get remove -y \
 		make \
