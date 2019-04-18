@@ -91,20 +91,19 @@ hostname="your.ocsp.hostname.org"
 port="80"
 openssl ocsp -no_nonce -reqout /root/ca_ecdsa/test/ocsptest.req -CAfile /root/ca_ecdsa/intermediate/certs/ecdsa_ca_chain.pem -issuer /root/ca_ecdsa/intermediate/certs/int.ca.crt.pem -cert /root/ca_ecdsa/intermediate/certs/ocsp_test_cert.pem -url "http://${hostname}:${port}" -header "HOST" "${hostname}" -text
 ```
-
 2. Get the url-encoding of the base64 encoding of the DER encoding of the OCSPRequest (to form the URI of the GET request), use [b64url.py](https://raw.githubusercontent.com/mattbodholdt/openca-ocspd/master/b64url.py).
 ```bash
 curl -s https://raw.githubusercontent.com/mattbodholdt/openca-ocspd/master/b64url.py > b64url.py
 chmod +x b64url.py
 python b64url.py /root/ca_ecdsa/test/ocsptest.req
 ```
-***No GUI:***
+### No GUI:
 3. The output of b64url.py is the URI of the GET request and can be tested with curl and parsed with openssl
 ```bash
 curl --silent -X GET http://your.ocsp.hostname.org:80/MEMwQTA%2FMD0wOzAJBgUrDgMCGgUABBSU91ppgoiy3Huh6hMq%2BUZant%2BVmQQUWW0MZSCgXy8pidQyWYcLAW%2BCHmACAhAB > /tmp/res.ocsp
 openssl ocsp -respin /tmp/res.ocsp -text -noverify
 ```
-***GUI***
+### GUI:
 3. The output of b64url.py is the URI of the GET request and can be tested with a graphical tool like Postman.
 
 Once you've generated a URI, modify the URI in test_ocspd.sh and you can repeat the test by running the script.
