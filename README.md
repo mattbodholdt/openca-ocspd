@@ -4,8 +4,8 @@ OpenCA OCSPD Container - OCSPD can handle both POST and GET requests
 
 Relies on the contents of repos openca/libpki and openca/openca-ocspd
 
-###Requires that you provide four files in various locations in the container.
-###Note: This is a breaking change from previous iterations where a volume could be mounted to /data/ocspd in the container. The original version of this image is still available using the tag mattbodholdt/openca-ocspd:v1 - (4/2019)
+## Requires that you provide four files in various locations in the container.
+### Note: This is a breaking change from previous iterations where a volume could be mounted to /data/ocspd in the container. The original version of this image is still available using the tag mattbodholdt/openca-ocspd:v1 - (4/2019)
 
   1. ca.crt - CA Chain - /usr/local/ocspd/etc/ocspd/certs/ca.crt
   2. ocspd.crt - OCSP Signing Cert - /usr/local/ocspd/etc/ocspd/certs/ocspd.crt
@@ -14,7 +14,7 @@ Relies on the contents of repos openca/libpki and openca/openca-ocspd
 
 This can be accomplished in various ways, depending on the platform... Here's some ideas:
 ---
-###Docker Volumes
+### Docker Volumes
 Mounting volumes to the container as demonstrated in the following example using standalone Docker:
 ```bash
 docker run -dt --name ocspd_container -p 2560:2560 -v /var/containerdata/ocspd_ecdsa/ca.crt:/usr/local/ocspd/etc/ocspd/certs/ca.crt -v /var/containerdata/ocspd_ecdsa/ocspd.crt:/usr/local/ocspd/etc/ocspd/certs/ocspd.crt -v /var/containerdata/ocspd_ecdsa/ocspd.key:/usr/local/ocspd/etc/ocspd/private/ocspd.key -v /var/containerdata/ocspd_ecdsa/crl.crl:/usr/local/ocspd/etc/ocspd/crls/crl.crl mattbodholdt/openca-ocspd:v2
@@ -24,7 +24,7 @@ To get to bash in the container:
 docker exec -it ocspd_container /bin/bash
 ```
 ---
-###Kubernetes Secrets
+### Kubernetes Secrets
 Another option is to use Kubernetes, save these items as secrets, and mount those secrets.  An example of how to do this on a kubeadm created, bare-metal, cluster with nginx ingress is provided in the [kubernetes directory](https://github.com/mattbodholdt/openca-ocspd/tree/master/kubernetes).  In the example manifests, the Kubernetes namespace is "pki".
 
 Create namespace:
@@ -66,7 +66,7 @@ Show Deployment:
 kubectl get deployment ecdsa-ocspd -n pki -o wide
 ```
 ---
-###Baked into Private Image
+### Baked into Private Image
 Another option would be to use the Docker Hub image of this project as a source to build your own image which contains your files and host it on a private Docker registry.  A dockerfile to do that would look something like this with the four files in the directory alongside the Dockerfile:
 
 ```bash
@@ -83,7 +83,7 @@ If you use this method where all the files are in the image, you could also use 
 
 If you choose to use the test script at any point, you'll want to modify it so you're testing with a cert of your own.
 
-##Testing
+## Testing
 To generate test POST and GET requests:
 1. Use openssl to generate the post request and write request out.
 ```bash
