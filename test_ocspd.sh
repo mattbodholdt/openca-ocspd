@@ -16,7 +16,8 @@ if [ $response = 200 ]; then
   echo "$response Response, testing..."
   curl --silent -X GET $req > /tmp/res.ocsp
   ocspres=$(openssl ocsp -respin /tmp/res.ocsp -text -noverify)
-  if [ -z "$(echo "$ocspres" | grep "OCSP Response Status: successful \(0x0\)")" ]; then
+  success=$(echo "$ocspres" | grep "OCSP Response Status: successful \(0x0\)")
+  if [ ! "${success:-0}" == 0 ]; then
     echo "$ocspres"
     rm -rf /tmp/res.ocsp
     echo "Success!"
