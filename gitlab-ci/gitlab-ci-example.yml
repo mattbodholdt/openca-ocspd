@@ -1,0 +1,74 @@
+image: docker:stable-git
+services:
+  - name: docker:dind
+    command:
+      - /bin/sh
+      - -c
+      - |
+        echo "$CI_SERVER_TLS_CA_FILE" > /etc/ssl/certs/internalca.crt || exit
+        dockerd-entrypoint.sh || exit
+
+stages:
+  - build
+  - test
+  - release
+
+variables:
+  RELEASE_TAG: privatev1
+  DOCKER_HOST: tcp://localhost:2375
+  DOCKER_DRIVER: overlay2
+  CONTAINER_TEST_IMAGE: docker.registry.yourdomain.org/openca-ocspd:$CI_COMMIT_REF_SLUG
+  CONTAINER_RELEASE_IMAGE: docker.registry.yourdomain.org/openca-ocspd:$RELEASE_TAG
+  KUBECTL_LOG_LEVEL: 0
+  REGISTRY_USER: $REGISTRY_USER
+  REGISTRY_PASS: $REGISTRY_PASS
+  REGISTRY_URL: $REGISTRY_URL
+
+build:
+  stage: build
+  before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS $REGISTRY_URL
+  script:
+    - docker build --pull -t $CONTAINER_TEST_IMAGE .
+    - docker push $CONTAINER_TEST_IMAGE
+
+test:
+  stage: test
+  before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS $REGISTRY_URL
+  script:
+    - docker pull $CONTAINER_TEST_IMAGE
+    - docker run -dt --name test $CONTAINER_TEST_IMAGE
+    - sleep 10
+    - docker exec test /usr/local/ocspd/test_ocspd.sh
+
+upload-to-registry:
+  stage: release
+  before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS $REGISTRY_URL
+  script:
+    - docker pull $CONTAINER_TEST_IMAGE
+    - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
+    - docker push $CONTAINER_RELEASE_IMAGE
+  only:
+    - master
+
+deploy-to-koobs:
+  stage: release
+  environment:
+    name: production
+  before_script:
+    - apk update
+    - apk add curl
+    - curl -L -s https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl > /usr/local/bin/kubectl
+    - chmod +x /usr/local/bin/kubectl
+  script:
+    - cd kubernetes
+    - sed -i "s/__VERSION__/${RELEASE_TAG}/" deployment.yml
+    - sed -i "s/__NAMESPACE__/${KUBE_NAMESPACE}/g" deployment.yml ingress.yml service.yml
+    - kubectl apply -f deployment.yml -v=$KUBECTL_LOG_LEVEL
+    - kubectl apply -f service.yml -v=$KUBECTL_LOG_LEVEL
+    - kubectl apply -f ingress.yml -v=$KUBECTL_LOG_LEVEL
+    - kubectl rollout status -f deployment.yml
+  only:
+    - master

@@ -1,0 +1,55 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ecdsa-ocspd
+  namespace: pki
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: ecdsa-ocspd
+  template:
+    metadata:
+      labels:
+        app: ecdsa-ocspd
+    spec:
+      containers:
+      - name: ecdsa-ocspd
+        image: mattbodholdt/openca-ocspd:v2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 2560
+        volumeMounts:
+        - name: ocsp-certs-volume
+          readOnly: true
+          mountPath: "/usr/local/ocspd/etc/ocspd/certs"
+        - name: crl-volume
+          readOnly: true
+          mountPath: "/usr/local/ocspd/etc/ocspd/crls"
+        - name: ocsp-key-volume
+          readOnly: true
+          mountPath: "/usr/local/ocspd/etc/ocspd/private"
+      volumes:
+      - name: ocsp-certs-volume
+        secret:
+          secretName: ocsp-certs
+          items:
+          - key: ocspd.crt
+            path: ocspd.crt
+          - key: ca.crt
+            path: ca.crt
+      - name: ocsp-key-volume
+        secret:
+          secretName: ocsp-certs
+          items:
+          - key: ocspd.key
+            path: ocspd.key
+      - name: crl-volume
+        secret:
+          secretName: crl
+          items:
+          - key: crl.crl
+            path: crl.crl

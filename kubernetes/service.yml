@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: ecdsa-ocspd
+  namespace: pki
+  labels:
+    app: ecdsa-ocspd
+spec:
+  selector:
+    app: ecdsa-ocspd
+  ports:
+  - name: http
+    port: 2560
+    targetPort: 2560

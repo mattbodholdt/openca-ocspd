@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    kubernetes.io/ingress.class: "nginx"
+  name: ecdsa-ocspd
+  namespace: pki
+spec:
+  rules:
+  - host: your.ocsp.hostname.org
+    http:
+      paths:
+      - backend:
+          serviceName: ecdsa-ocspd
+          servicePort: 2560
+        path: /
