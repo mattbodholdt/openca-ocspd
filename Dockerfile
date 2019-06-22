@@ -14,7 +14,7 @@ RUN apt update && \
 	  apt clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN git clone https://github.com/openca/libpki.git -b master --depth 1 && \
+RUN git clone https://github.com/openca/libpki.git -b master --depth 1 libpki && \
 	cd /libpki && \
 	./configure && \
 	make && \
@@ -23,7 +23,7 @@ RUN git clone https://github.com/openca/libpki.git -b master --depth 1 && \
 	cd / && \
 	rm -rf /libpki
 
-RUN git clone https://github.com/openca/openca-ocspd.git -b openca-ocspd-3.1.2 --depth 1 && \
+RUN git clone https://github.com/mattbodholdt/openca-ocspd-1.git -b master --depth 1 openca-ocspd && \
 	cd /openca-ocspd && \
 	./configure --prefix=/usr/local/ocspd && \
   make && \
